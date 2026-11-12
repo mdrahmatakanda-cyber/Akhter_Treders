@@ -1,0 +1,2924 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <!-- ১. প্রাথমিক মেটা ট্যাগ -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>স্মার্ট দোকান ম্যানেজমেন্ট সিস্টেম</title>
+
+    <!-- ২. PWA ও অফলাইন ম্যানিফেস্ট -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1a5c2a" />
+
+    <!-- ৩. অ্যাপ আইকন (Favicon এবং Apple Touch Icon) -->
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="assets/images/icon-192.png"
+    />
+
+    <!-- ৪. ফন্ট এবং সিএসএস (CSS) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <!-- ── MODERN LOADING SCREEN ── -->
+
+    <div id="loading-screen">
+      <div class="loading-glow"></div>
+
+      <!-- ব্যানার বক্স (onload ইভেন্ট যুক্ত করা হয়েছে) -->
+      <div
+        style="
+          position: relative;
+          z-index: 10;
+          text-align: center;
+          margin-bottom: 16px;
+        "
+      >
+        <div
+          style="
+            font-size: 20px;
+            color: #000080;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+          "
+        >
+          ━━ ﷽ ━━
+        </div>
+        <div
+          style="
+            font-size: 18px;
+            font-weight: 700;
+            color: #008000;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+          "
+        >
+          <span data-i18n="html.s12">আসসালামু আলাইকুম ওয়া রহমাতুল্লাহ</span>
+        </div>
+        <div
+          style="
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(
+              90deg,
+              transparent,
+              #a5d6a7,
+              transparent
+            );
+            margin: 8px auto 0;
+            border-radius: 2px;
+          "
+        ></div>
+      </div>
+      <div class="loading-logo-box">
+        <img
+          src="assets/images/banner-loading.webp"
+          onload="
+            this.style.opacity = '1';
+            this.parentElement.style.animation =
+              'float-logo 3s ease-in-out infinite';
+          "
+          onerror="this.style.display = 'none'"
+        />
+      </div>
+
+      <div class="loading-text">
+        <span data-i18n="html.s131">স্মার্ট দোকান ম্যানেজমেন্ট সিস্টেমে</span>
+      </div>
+      <div class="loading-sub">
+        <span data-i18n="html.s11">আপনাকে স্বাগতম</span>
+      </div>
+
+      <div class="modern-loader" id="loading-spinner-box">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <div
+        id="loading-error"
+        style="
+          display: none;
+          position: relative;
+          z-index: 10;
+          margin-top: 30px;
+          padding: 24px;
+          background: rgba(220, 38, 38, 0.15);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(220, 38, 38, 0.3);
+          border-radius: 16px;
+          text-align: center;
+          max-width: 320px;
+        "
+      >
+        <div style="font-size: 28px; margin-bottom: 10px">⚠️</div>
+        <span style="color: #fca5a5; font-weight: 600; font-size: 14px"
+          ><span data-i18n="html.s16"
+            >ইন্টারনেট সংযোগ বিচ্ছিন্ন! দয়া করে চেক করুন।</span
+          ></span
+        ><br /><br />
+        <button
+          onclick="location.reload()"
+          style="
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+          "
+        >
+          <span data-i18n="html.s158">🔄 রিলোড করুন</span>
+        </button>
+      </div>
+    </div>
+    <!-- ── END OF MODERN LOADING SCREEN ── -->
+
+    <!-- ── TOAST ── -->
+    <div id="toast-container"></div>
+
+    <!-- ── PRINT AREA ── -->
+    <div id="print-area" class="hidden"></div>
+
+    <!-- ── LOCK SCREEN ── -->
+    <div id="lock-screen" class="hidden">
+      <div
+        class="lock-banner"
+        style="text-align: center; color: white; margin-bottom: 24px"
+      >
+        <!-- ধানের শীষের পরিবর্তে দোকানের লোগো -->
+        <img
+          src="assets/images/logo.png"
+          style="
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: block;
+            border: 3px solid #a5d6a7;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          "
+          alt="Logo"
+          onerror="this.style.display = 'none'"
+        />
+
+        <div
+          class="shop-name"
+          id="lock-shop-name"
+          style="
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          "
+        >
+          <span data-i18n="html.s91">মেসার্স আখতার ট্রেডার্স</span>
+        </div>
+        <div
+          class="shop-sub"
+          id="lock-shop-sub"
+          style="font-size: 13px; opacity: 0.9; margin-bottom: 6px"
+        >
+          <span data-i18n="html.s123"
+            >সার, কীটনাশক, বীজ ও কৃষি উপকরণ বিক্রেতা</span
+          >
+        </div>
+        <div
+          class="shop-contact"
+          id="lock-shop-contact"
+          style="font-size: 12px; opacity: 0.8"
+        >
+          <span data-i18n="html.s155">📞 01716397021 | 📍 কুমিল্লা</span>
+        </div>
+      </div>
+
+      <div
+        class="lock-box"
+        style="
+          background: white;
+          border-radius: 20px;
+          padding: 28px 24px;
+          width: 100%;
+          max-width: 360px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          text-align: center;
+        "
+      >
+        <div class="lock-user-info" style="margin-bottom: 16px">
+          <h3
+            id="lock-username"
+            style="font-size: 18px; font-weight: 800; color: #1a5c2a"
+          >
+            <span data-i18n="html.s84">ব্যবহারকারী</span>
+          </h3>
+          <p
+            id="lock-userrole"
+            style="font-size: 13px; color: #6b7280; font-weight: 600"
+          >
+            <span data-i18n="html.s145">👑 Owner (মালিক)</span>
+          </p>
+        </div>
+
+        <div
+          class="lock-title"
+          style="
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-weight: 600;
+          "
+        >
+          <span data-i18n="html.s164">🔒 পাসওয়ার্ড দিন</span>
+        </div>
+        <div class="form-group">
+          <input
+            type="password"
+            id="lock-password"
+            class="form-control"
+            placeholder="পাসওয়ার্ড লিখুন"
+            data-i18n-placeholder="html.s71"
+            style="
+              text-align: center;
+              font-size: 16px;
+              padding: 12px;
+              border-radius: 12px;
+              border: 2px solid #a5d6a7;
+            "
+            onkeydown="if (event.key === 'Enter') unlockApp();"
+          />
+        </div>
+
+        <button
+          class="btn btn-primary w-full"
+          style="
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 12px;
+            font-weight: 800;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(45, 138, 69, 0.3);
+          "
+          onclick="unlockApp()"
+        >
+          <span data-i18n="html.s165">🔓 আনলক করুন</span>
+        </button>
+
+        <div style="text-align: center; margin-top: 16px">
+          <button
+            onclick="showForgotPassword()"
+            style="
+              background: none;
+              border: none;
+              color: #2d8a45;
+              font-size: 13px;
+              font-weight: 700;
+              cursor: pointer;
+              font-family: &quot;Noto Serif Bengali&quot;, serif;
+            "
+          >
+            <span data-i18n="html.s70">পাসওয়ার্ড ভুলে গেছেন?</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AUTH SCREEN ── -->
+    <div id="auth-screen" class="hidden">
+      <div class="auth-box">
+        <!-- ভাষা সিলেক্টর (Language Switcher) -->
+        <div style="text-align: right; margin-bottom: 8px">
+          <select
+            id="lang-switcher"
+            class="form-control"
+            style="
+              width: auto;
+              display: inline-block;
+              padding: 4px 8px;
+              font-size: 12px;
+            "
+            onchange="I18N.setLanguage(this.value)"
+          >
+            <option value="bn">
+              <span data-i18n="html.s142">🇧🇩 বাংলা</span>
+            </option>
+            <option value="en">🇬🇧 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+          </select>
+        </div>
+
+        <!-- Logo -->
+        <div style="text-align: center; margin-bottom: 20px">
+          <img
+            src="assets/images/logo.png"
+            style="
+              width: 100px;
+              height: 100px;
+              object-fit: contain;
+              border-radius: 16px;
+              box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+              margin-bottom: 12px;
+            "
+          />
+          <h2
+            style="
+              color: #1a5c2a;
+              font-size: 18px;
+              font-weight: 800;
+              margin-bottom: 4px;
+            "
+          >
+            <span data-i18n="html.s91">মেসার্স আখতার ট্রেডার্স</span>
+          </h2>
+          <p style="color: #6b7280; font-size: 12px" data-i18n="config.s1">
+            স্মার্ট দোকান মেনেজমেন্ট সিস্টেম
+          </p>
+        </div>
+
+        <!-- Auth Tabs (লগইন / রেজিস্ট্রেশন) -->
+        <div class="auth-tabs">
+          <button
+            class="auth-tab active"
+            onclick="switchAuthTab('login')"
+            data-i18n="ui.login_tab"
+          >
+            🔑 লগইন
+          </button>
+          <button
+            class="auth-tab"
+            onclick="switchAuthTab('register')"
+            data-i18n="ui.register_tab"
+          >
+            📝 নিবন্ধন
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form">
+          <div class="form-group">
+            <label class="form-label"
+              ><span data-i18n="ui.email">ইমেইল</span>
+              <span class="required">*</span></label
+            >
+            <input
+              type="email"
+              id="login-email"
+              class="form-control"
+              placeholder="আপনার ইমেইল লিখুন"
+              data-i18n-placeholder="ui.email_ph"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              ><span data-i18n="ui.password">পাসওয়ার্ড</span>
+              <span class="required">*</span></label
+            >
+            <input
+              type="password"
+              id="login-pass"
+              class="form-control"
+              placeholder="পাসওয়ার্ড দিন"
+              data-i18n-placeholder="ui.password_ph"
+              onkeydown="if (event.key === 'Enter') doLogin();"
+            />
+          </div>
+          <button
+            class="btn btn-primary w-full btn-lg"
+            onclick="doLogin()"
+            id="login-btn"
+            data-i18n="ui.login_btn"
+          >
+            🔑 লগইন করুন
+          </button>
+          <div style="text-align: center; margin-top: 12px">
+            <button
+              onclick="showForgotPassword()"
+              data-i18n="ui.forgot_password"
+              style="
+                background: none;
+                border: none;
+                color: #2d8a45;
+                font-size: 13px;
+                cursor: pointer;
+                font-family: inherit;
+              "
+            >
+              পাসওয়ার্ড ভুলে গেছেন?
+            </button>
+          </div>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form" class="hidden">
+          <div class="form-group">
+            <label class="form-label"
+              ><span data-i18n="ui.full_name">পুরো নাম</span>
+              <span class="required">*</span></label
+            >
+            <input
+              type="text"
+              id="reg-name"
+              class="form-control"
+              placeholder="আপনার নাম লিখুন"
+              data-i18n-placeholder="ui.full_name_ph"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              ><span data-i18n="ui.email">ইমেইল</span>
+              <span class="required">*</span></label
+            >
+            <input
+              type="email"
+              id="reg-email"
+              class="form-control"
+              placeholder="ইমেইল লিখুন"
+              data-i18n-placeholder="ui.email_ph2"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="ui.mobile">মোবাইল নম্বর</label>
+            <input
+              type="tel"
+              id="reg-phone"
+              class="form-control"
+              placeholder="মোবাইল নম্বর লিখুন"
+              data-i18n-placeholder="ui.mobile_ph"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label"
+              ><span data-i18n="ui.password">পাসওয়ার্ড</span>
+              <span class="required">*</span></label
+            >
+            <input
+              type="password"
+              id="reg-pass"
+              class="form-control"
+              placeholder="কমপক্ষে ৬ অক্ষর"
+              data-i18n-placeholder="ui.password_ph2"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="ui.role">ভূমিকা (Role)</label>
+            <select id="reg-role" class="form-control">
+              <option value="owner" selected data-i18n="ui.role_owner">
+                👑 Owner (মালিক)
+              </option>
+              <option value="manager" data-i18n="ui.role_manager">
+                👤 Manager
+              </option>
+            </select>
+          </div>
+          <button
+            class="btn btn-primary w-full btn-lg"
+            onclick="doRegister()"
+            id="reg-btn"
+            data-i18n="ui.register_btn"
+          >
+            ✅ নিবন্ধন করুন
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MAIN APP ── -->
+    <div id="app" class="hidden">
+      <!-- HEADER -->
+      <header id="main-header" style="background: #1a5c2a">
+        <!-- Banner Image -->
+        <div
+          style="
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            background: #1a5c2a;
+          "
+        >
+          <img
+            src="assets/images/banner-auth.webp"
+            style="
+              width: 100%;
+              display: block;
+              height: auto;
+              max-height: 300px;
+              object-fit: contain;
+            "
+            onerror="this.style.display = 'none'"
+          />
+        </div>
+
+        <!-- Info Bar: Date + User + Lock -->
+        <div
+          style="
+            background: #ffffff !important;
+            width: 100%;
+            padding: 4px 0;
+            box-sizing: border-box;
+          "
+        >
+          <div
+            style="
+              background: #ffffff !important;
+              margin: 0 8px;
+              padding: 5px 8px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              border: 2px solid #2e7d32;
+              border-radius: 12px;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+              font-family: &quot;Noto Serif Bengali&quot;, serif;
+              overflow: hidden;
+              box-sizing: border-box;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex: 1;
+                min-width: 0;
+              "
+            >
+              <span style="font-size: 18px; flex-shrink: 0">📅</span>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  overflow: hidden;
+                  white-space: nowrap;
+                "
+              >
+                <span
+                  id="hdr-date"
+                  style="
+                    font-size: 13px;
+                    font-weight: 800;
+                    color: #1b5e20;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                ></span>
+                <span
+                  id="hdr-day"
+                  style="
+                    font-size: 9px;
+                    font-weight: 800;
+                    background: #2e7d32;
+                    color: white;
+                    padding: 1px 5px;
+                    border-radius: 4px;
+                    flex-shrink: 0;
+                  "
+                ></span>
+              </div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-shrink: 0;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  background: #f1f8f3;
+                  padding: 4px 8px;
+                  border-radius: 20px;
+                  border: 1px solid #c8e6c9;
+                "
+              >
+                <span style="font-size: 12px">👤</span>
+                <span
+                  id="hdr-user"
+                  style="
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #2e7d32;
+                    max-width: 80px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                  "
+                ></span>
+              </div>
+
+              <button
+                onclick="I18N.nextLanguage()"
+                id="hdr-lang-btn"
+                style="
+                  background: #f1f8f3;
+                  color: #2e7d32;
+                  border: 1px solid #c8e6c9;
+                  padding: 6px 10px;
+                  border-radius: 15px;
+                  font-size: 11px;
+                  font-weight: 700;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  white-space: nowrap;
+                "
+                title="ভাষা বদলান / Switch language / تغيير اللغة"
+              >
+                🌐 <span id="hdr-lang-label">EN</span>
+              </button>
+
+              <button
+                onclick="lockApp()"
+                style="
+                  background: linear-gradient(135deg, #e65c00, #ff8c00);
+                  color: white;
+                  border: none;
+                  padding: 6px 12px;
+                  border-radius: 15px;
+                  font-size: 11px;
+                  font-weight: 700;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  gap: 4px;
+                  white-space: nowrap;
+                  box-shadow: 0 2px 6px rgba(230, 92, 0, 0.2);
+                "
+              >
+                🔒 <span class="lock-text">Lock</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden elements for JS compatibility -->
+        <span id="hdr-name" style="display: none"></span>
+        <span id="hdr-sub" style="display: none"></span>
+        <span id="hdr-phone1" style="display: none"></span>
+        <span id="hdr-phone2" style="display: none"></span>
+        <span id="hdr-address" style="display: none"></span>
+      </header>
+
+      <!-- ══ PAGES ══ -->
+
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page active">
+        <div
+          style="
+            background: #f4f6f4;
+            min-height: 100vh;
+            padding: 6px 8px 80px;
+            box-sizing: border-box;
+            width: 100%;
+            overflow-x: hidden;
+          "
+        >
+          <!-- Page title -->
+          <div style="margin: 0px 0 2px; text-align: center; line-height: 1.3">
+            <div
+              style="
+                font-size: 12px;
+                color: #1565c0;
+                font-weight: 600;
+                margin-bottom: 1px;
+              "
+            >
+              <span data-i18n="html.s130"
+                >স্মার্ট দোকান ম্যানেজমেন্ট সিস্টেম</span
+              >
+            </div>
+            <div
+              style="
+                font-size: 20px;
+                font-weight: 800;
+                color: #1a3a1a;
+                font-family: &quot;Noto Serif Bengali&quot;, serif;
+              "
+            >
+              <span data-i18n="html.s44">ড্যাশবোর্ড</span>
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 300px;
+              gap: 16px;
+              align-items: start;
+            "
+            id="dash-layout"
+          >
+            <!-- ══ LEFT COLUMN ══ -->
+            <div>
+              <!-- MODULE GRID: 4 columns, 2 rows -->
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 6px;
+                  margin-bottom: 10px;
+                  width: 100%;
+                "
+                id="modules-grid"
+              >
+                <!-- বিক্রয় -->
+                <div
+                  onclick="openNewSaleModal()"
+                  style="
+                    background: #f0fff4;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #e0f0e0;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">🛒</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #2d8a45;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s56">নতুন বিক্রি</span>
+                  </div>
+                </div>
+
+                <!-- ক্রয় -->
+                <div
+                  onclick="openNewPurchaseModal()"
+                  style="
+                    background: #f0f4ff;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #e0eaf8;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">🧺</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #1565c0;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s54">নতুন ক্রয়</span>
+                  </div>
+                </div>
+
+                <!-- পণ্য তালিকা -->
+                <div
+                  onclick="navigate('products')"
+                  style="
+                    background: #faf0ff;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #ede0f8;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">📦</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #6a1b9a;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s61">পণ্য তালিকা</span>
+                  </div>
+                </div>
+
+                <!-- মজুদ -->
+                <div
+                  onclick="navigate('stock')"
+                  style="
+                    background: #fff8f0;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #ffe0c0;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">🏭</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #e65c00;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s87">মজুদ</span>
+                  </div>
+                </div>
+
+                <!-- বাকির খাতা -->
+                <div
+                  onclick="navigate('due')"
+                  style="
+                    background: #fffdf0;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #fde8a0;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">👥</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #f57f17;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s78">বাকির খাতা</span>
+                  </div>
+                </div>
+
+                <!-- ক্যাশবক্স (owner only) -->
+                <div
+                  onclick="navigate('cashbox')"
+                  class="owner-only hidden"
+                  style="
+                    background: #fff0f0;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #ffc8c8;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">💰</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #c62828;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s34">ক্যাশবক্স</span>
+                  </div>
+                </div>
+
+                <!-- দোকানের খরচ -->
+                <div
+                  onclick="openExpenseModal()"
+                  style="
+                    background: #f0fbfa;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #b2dfdb;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">💸</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #00695c;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s47">দোকানের খরচ</span>
+                  </div>
+                </div>
+
+                <!-- রিপোর্ট -->
+                <div
+                  onclick="navigate('reports')"
+                  style="
+                    background: #f5f5f5;
+                    border-radius: 12px;
+                    padding: 9px 5px 7px;
+                    text-align: center;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                    transition: all 0.2s;
+                    border: 2.5px solid #cfd8dc;
+                  "
+                  onmouseover="
+                    this.style.transform = 'translateY(-3px)';
+                    this.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
+                  "
+                  onmouseout="
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+                  "
+                >
+                  <div style="font-size: 40px; margin-bottom: 4px">📊</div>
+                  <div
+                    style="
+                      font-size: 18px;
+                      font-weight: 800;
+                      color: #37474f;
+                      margin-bottom: 4px;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s102">রিপোর্ট</span>
+                  </div>
+                </div>
+              </div>
+              <!-- end modules-grid -->
+
+              <!-- RECENT ACTIVITY TABLE -->
+              <div
+                style="
+                  background: white;
+                  border-radius: 14px;
+                  overflow: hidden;
+                  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+                  margin-bottom: 14px;
+                "
+              >
+                <div
+                  style="
+                    padding: 13px 16px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #f0f0f0;
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 8px">
+                    <span style="font-size: 16px">⏰</span>
+                    <span
+                      style="
+                        font-size: 15px;
+                        font-weight: 800;
+                        color: #1a3a1a;
+                        font-family: &quot;Noto Serif Bengali&quot;, serif;
+                      "
+                      ><span data-i18n="html.s121"
+                        >সাম্প্রতিক কার্যক্রম</span
+                      ></span
+                    >
+                  </div>
+                  <button
+                    onclick="navigate('reports')"
+                    style="
+                      background: #f0f4f0;
+                      border: none;
+                      padding: 6px 12px;
+                      border-radius: 8px;
+                      font-size: 12px;
+                      font-weight: 600;
+                      cursor: pointer;
+                      color: #2d8a45;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s117">সব দেখুন ›</span>
+                  </button>
+                </div>
+                <div style="overflow-x: auto">
+                  <table
+                    style="
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-size: 13px;
+                    "
+                  >
+                    <thead style="background: #1a5c2a; color: white">
+                      <tr>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                            white-space: nowrap;
+                          "
+                        >
+                          <span data-i18n="html.s46">তারিখ ও সময়</span>
+                        </th>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                          "
+                        >
+                          <span data-i18n="html.s51">ধরন</span>
+                        </th>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                          "
+                        >
+                          <span data-i18n="html.s58">নাম / বিবরণ</span>
+                        </th>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                          "
+                        >
+                          <span data-i18n="html.s65">পরিমাণ</span>
+                        </th>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                          "
+                        >
+                          <span data-i18n="html.s40">টাকা</span>
+                        </th>
+                        <th
+                          style="
+                            padding: 10px 12px;
+                            text-align: left;
+                            font-weight: 600;
+                          "
+                        >
+                          <span data-i18n="html.s13">ইউজার</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="recent-activity-body">
+                      <tr>
+                        <td
+                          colspan="6"
+                          style="
+                            text-align: center;
+                            padding: 30px;
+                            color: #9ca3af;
+                          "
+                        >
+                          <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- AD BANNER -->
+              <div
+                style="
+                  border-radius: 14px;
+                  overflow: hidden;
+                  margin-bottom: 8px;
+                  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+                "
+              >
+                <img
+                  src="assets/images/ad-banner.webp"
+                  style="width: 100%; display: block; cursor: pointer"
+                  onclick="openWhatsApp()"
+                  onerror="this.parentElement.style.display = 'none'"
+                />
+              </div>
+
+              <!-- MODERN CONTACT BUTTONS (এক লাইনে ৪টি) -->
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(4, 1fr);
+                  gap: 8px;
+                  margin-bottom: 20px;
+                  font-family:
+                    &quot;Segoe UI&quot;, Tahoma, Geneva, Verdana, sans-serif;
+                "
+              >
+                <!-- কল বাটন -->
+                <a
+                  href="tel:+8801752005057"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    background: linear-gradient(
+                      135deg,
+                      #1e7e34 0%,
+                      #155d27 100%
+                    );
+                    color: white;
+                    padding: 10px 4px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px rgba(26, 92, 42, 0.3);
+                    transition: transform 0.2s;
+                    white-space: nowrap;
+                  "
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+                    ></path>
+                  </svg>
+                  <span data-i18n="html.s24">কল</span>
+                </a>
+
+                <!-- WhatsApp বাটন -->
+                <a
+                  href="https://wa.me/8801752005057?text=আমি একটি ম্যানেজমেন্ট সিস্টেম চাই"
+                  target="_blank"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    background: linear-gradient(
+                      135deg,
+                      #25d366 0%,
+                      #128c7e 100%
+                    );
+                    color: white;
+                    padding: 10px 4px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+                    transition: transform 0.2s;
+                    white-space: nowrap;
+                  "
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.938 3.659 1.435 5.63 1.435h.008c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"
+                    />
+                  </svg>
+                  WhatsApp
+                </a>
+
+                <!-- Facebook বাটন -->
+                <a
+                  href="https://www.facebook.com/rahmatullah.akanda.2024"
+                  target="_blank"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    background: linear-gradient(
+                      135deg,
+                      #0084ff 0%,
+                      #0063db 100%
+                    );
+                    color: white;
+                    padding: 10px 4px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px rgba(0, 132, 255, 0.3);
+                    transition: transform 0.2s;
+                    white-space: nowrap;
+                  "
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.654V24l4.088-2.242c1.112.309 2.289.474 3.443.474 6.627 0 12-4.974 12-11.111C24 4.974 18.627 0 12 0zm1.291 14.193l-3.32-3.545-6.485 3.545 7.134-7.57 3.32 3.545 6.485-3.545-7.134 7.57z"
+                    />
+                  </svg>
+                  Facebook
+                </a>
+
+                <!-- Email বাটন -->
+                <a
+                  href="mailto:mdrahmatakanda@gmail.com"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    background: linear-gradient(
+                      135deg,
+                      #ea4335 0%,
+                      #c5221f 100%
+                    );
+                    color: white;
+                    padding: 10px 4px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-weight: 700;
+                    box-shadow: 0 4px 10px rgba(234, 67, 53, 0.3);
+                    transition: transform 0.2s;
+                    white-space: nowrap;
+                  "
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                    ></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  Email
+                </a>
+              </div>
+            </div>
+            <!-- end left column -->
+
+            <!-- ══ RIGHT COLUMN ══ -->
+            <div style="display: flex; flex-direction: column; gap: 10px">
+              <div
+                style="
+                  font-size: 14px;
+                  font-weight: 800;
+                  color: #e65c00;
+                  font-family: &quot;Noto Serif Bengali&quot;, serif;
+                "
+              >
+                <span data-i18n="html.s136">⚡ দ্রুত তথ্য</span>
+              </div>
+
+              <!-- Low stock alert -->
+              <div
+                style="
+                  background: white;
+                  border-radius: 14px;
+                  padding: 14px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  <span style="font-size: 20px">⚠️</span>
+                  <span
+                    style="font-size: 12px; color: #6b7280; font-weight: 600"
+                    ><span data-i18n="html.s109">লো স্টক সতর্কতা</span></span
+                  >
+                </div>
+                <div
+                  id="low-stock-count"
+                  style="
+                    font-size: 32px;
+                    font-weight: 800;
+                    color: #c62828;
+                    font-family: &quot;Noto Serif Bengali&quot;, serif;
+                  "
+                >
+                  <span data-i18n="html.s132">০</span>
+                </div>
+                <div style="font-size: 11px; color: #6b7280">
+                  <span data-i18n="html.s41">টি পণ্যের স্টক কম</span>
+                </div>
+              </div>
+
+              <!-- Today due -->
+              <div
+                style="
+                  background: white;
+                  border-radius: 14px;
+                  padding: 14px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 6px;
+                  "
+                >
+                  <span style="font-size: 20px">👥</span>
+                  <span
+                    style="font-size: 12px; color: #6b7280; font-weight: 600"
+                    ><span data-i18n="html.s9">আজকের বাকি</span></span
+                  >
+                </div>
+                <div
+                  id="today-due"
+                  style="
+                    font-size: 20px;
+                    font-weight: 800;
+                    color: #1565c0;
+                    font-family: &quot;Noto Serif Bengali&quot;, serif;
+                  "
+                >
+                  <span data-i18n="html.s133">৳ ০</span>
+                </div>
+                <div
+                  id="total-due-customers"
+                  style="font-size: 11px; color: #6b7280"
+                >
+                  <span data-i18n="html.s100">মোট ০ জন</span>
+                </div>
+              </div>
+
+              <!-- Cash in/out -->
+              <div
+                style="
+                  background: white;
+                  border-radius: 14px;
+                  padding: 14px;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <span style="font-size: 20px">💵</span>
+                  <span
+                    style="font-size: 12px; color: #6b7280; font-weight: 600"
+                    ><span data-i18n="html.s8">আজকের ক্যাশ ইন / আউট</span></span
+                  >
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  "
+                >
+                  <div>
+                    <div
+                      style="
+                        font-size: 10px;
+                        color: #6b7280;
+                        margin-bottom: 2px;
+                      "
+                    >
+                      <span data-i18n="html.s14">ইন</span>
+                    </div>
+                    <div
+                      id="today-cash-in"
+                      style="
+                        font-size: 17px;
+                        font-weight: 800;
+                        color: #2d8a45;
+                        font-family: &quot;Noto Serif Bengali&quot;, serif;
+                      "
+                    >
+                      <span data-i18n="html.s133">৳ ০</span>
+                    </div>
+                  </div>
+                  <div style="text-align: right">
+                    <div
+                      style="
+                        font-size: 10px;
+                        color: #6b7280;
+                        margin-bottom: 2px;
+                      "
+                    >
+                      <span data-i18n="html.s6">আউট</span>
+                    </div>
+                    <div
+                      id="today-cash-out"
+                      style="
+                        font-size: 17px;
+                        font-weight: 800;
+                        color: #c62828;
+                        font-family: &quot;Noto Serif Bengali&quot;, serif;
+                      "
+                    >
+                      <span data-i18n="html.s133">৳ ০</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Low stock list -->
+              <div
+                style="
+                  background: white;
+                  border-radius: 14px;
+                  overflow: hidden;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+                  flex: 1;
+                "
+              >
+                <div
+                  style="
+                    padding: 11px 14px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-bottom: 1px solid #f0f0f0;
+                  "
+                >
+                  <span
+                    style="
+                      font-size: 13px;
+                      font-weight: 800;
+                      color: #1a3a1a;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                    ><span data-i18n="html.s22">কম স্টকে আছে</span></span
+                  >
+                  <button
+                    onclick="navigate('stock')"
+                    style="
+                      background: #f0f4f0;
+                      border: none;
+                      padding: 5px 10px;
+                      border-radius: 6px;
+                      font-size: 11px;
+                      font-weight: 600;
+                      cursor: pointer;
+                      color: #2d8a45;
+                      font-family: &quot;Noto Serif Bengali&quot;, serif;
+                    "
+                  >
+                    <span data-i18n="html.s117">সব দেখুন ›</span>
+                  </button>
+                </div>
+                <div id="low-stock-list" style="padding: 8px 12px">
+                  <div
+                    style="
+                      text-align: center;
+                      padding: 16px;
+                      color: #9ca3af;
+                      font-size: 12px;
+                    "
+                  >
+                    <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end right column -->
+          </div>
+          <!-- end dash-layout -->
+
+          <!-- Footer (White Design) -->
+          <div
+            style="
+              text-align: center;
+              padding: 14px 10px;
+              margin-top: 12px;
+              background: #ffffff;
+              border: 2px solid #2d8a45;
+              border-radius: 12px;
+              box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <div style="font-size: 12px; font-weight: 800; color: #1a5c2a">
+              <span data-i18n="html.s3">© ২০২৬</span>
+              <span id="footer-shop-name"
+                ><span data-i18n="html.s91">মেসার্স আখতার ট্রেডার্স</span></span
+              >
+              <span style="color: #2d8a45; margin: 0 6px">|</span>
+              <span data-i18n="html.s113">সকল অধিকার সংরক্ষিত</span>
+            </div>
+            <div
+              style="
+                font-size: 11px;
+                color: #6b7280;
+                margin-top: 5px;
+                font-weight: 600;
+              "
+            >
+              ✨ <span style="color: #e65c00">Akand Smart Solutions</span>
+              <span data-i18n="html.s50">দ্বারা নির্মিত</span>
+            </div>
+          </div>
+        </div>
+        <!-- এই ট্যাগটি ড্যাশবোর্ডের ভেতরের ব্যাকগ্রাউন্ড বক্সকে Close করেছে -->
+      </div>
+      <!-- এই ট্যাগটি পুরো ড্যাশবোর্ড পেজকে Close করেছে -->
+
+      <!-- SALES PAGE -->
+      <div id="page-sales" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s151">💰 বিক্রয়</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s80">বিক্রয়ের তালিকা</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openNewSaleModal()">
+            <span data-i18n="html.s141">＋ নতুন বিক্রয়</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="search-bar">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="🔍 কাস্টমার খুঁজুন..."
+              data-i18n-placeholder="html.s159"
+              oninput="filterSales(this.value)"
+            />
+            <input
+              type="date"
+              id="sales-date-filter"
+              class="filter-select"
+              onchange="filterSales()"
+            />
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th><span data-i18n="html.s45">তারিখ</span></th>
+                    <th><span data-i18n="html.s27">কাস্টমার</span></th>
+                    <th><span data-i18n="html.s92">মোট</span></th>
+                    <th><span data-i18n="html.s52">নগদ</span></th>
+                    <th><span data-i18n="html.s76">বাকি</span></th>
+                    <th><span data-i18n="html.s129">স্ট্যাটাস</span></th>
+                    <th><span data-i18n="html.s25">কার্যক্রম</span></th>
+                  </tr>
+                </thead>
+                <tbody id="sales-table-body">
+                  <tr>
+                    <td colspan="8" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PURCHASE PAGE -->
+      <div id="page-purchase" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s156">📦 ক্রয়</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s36">ক্রয়ের তালিকা</span>
+            </div>
+          </div>
+          <button
+            class="btn btn-primary btn-sm"
+            onclick="openNewPurchaseModal()"
+          >
+            <span data-i18n="html.s138">＋ নতুন ক্রয়</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="search-bar">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="🔍 সাপ্লায়ার নাম খুঁজুন..."
+              data-i18n-placeholder="html.s162"
+              oninput="filterPurchases(this.value)"
+            />
+            <input
+              type="date"
+              id="purchase-date-filter"
+              class="filter-select"
+              onchange="filterPurchases()"
+            />
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th><span data-i18n="html.s45">তারিখ</span></th>
+                    <th><span data-i18n="html.s120">সাপ্লায়ার</span></th>
+                    <th><span data-i18n="html.s92">মোট</span></th>
+                    <th><span data-i18n="html.s66">পরিশোধ</span></th>
+                    <th><span data-i18n="html.s76">বাকি</span></th>
+                    <th><span data-i18n="html.s129">স্ট্যাটাস</span></th>
+                    <th><span data-i18n="html.s25">কার্যক্রম</span></th>
+                  </tr>
+                </thead>
+                <tbody id="purchase-table-body">
+                  <tr>
+                    <td colspan="8" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS PAGE -->
+      <div id="page-products" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s157">📦 পণ্য তালিকা</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s62">পণ্যের তালিকা</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openProductModal()">
+            <span data-i18n="html.s140">＋ নতুন পণ্য</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="search-bar">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="🔍 পণ্যের নাম খুঁজুন..."
+              data-i18n-placeholder="html.s161"
+              oninput="filterProducts(this.value)"
+            />
+            <select
+              class="filter-select"
+              onchange="filterProducts()"
+              id="product-cat-filter"
+            >
+              <option value="">
+                <span data-i18n="html.s116">সব ক্যাটাগরি</span>
+              </option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th><span data-i18n="html.s63">পণ্যের নাম</span></th>
+                    <th><span data-i18n="html.s32">ক্যাটাগরি</span></th>
+                    <th><span data-i18n="html.s39">টাইপ</span></th>
+                    <th><span data-i18n="html.s35">ক্রয় মূল্য</span></th>
+                    <th><span data-i18n="html.s38">খুচরা মূল্য</span></th>
+                    <th><span data-i18n="html.s68">পাইকারি মূল্য</span></th>
+                    <th><span data-i18n="html.s126">স্টক</span></th>
+                    <th><span data-i18n="html.s129">স্ট্যাটাস</span></th>
+                    <th><span data-i18n="html.s25">কার্যক্রম</span></th>
+                  </tr>
+                </thead>
+                <tbody id="products-table-body">
+                  <tr>
+                    <td colspan="9" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STOCK PAGE -->
+      <div id="page-stock" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s144">🏭 মজুদ</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s127">স্টক ব্যবস্থাপনা</span>
+            </div>
+          </div>
+          <button
+            class="btn btn-secondary btn-sm"
+            onclick="openStockAdjustModal()"
+          >
+            <span data-i18n="html.s4">± সমন্বয়</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="search-bar">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="🔍 পণ্যের নাম খুঁজুন..."
+              data-i18n-placeholder="html.s161"
+              oninput="filterStock(this.value)"
+            />
+            <select
+              class="filter-select"
+              onchange="filterStock()"
+              id="stock-status-filter"
+            >
+              <option value="">
+                <span data-i18n="html.s118">সব স্ট্যাটাস</span>
+              </option>
+              <option value="low">
+                <span data-i18n="html.s108">লো স্টক</span>
+              </option>
+              <option value="out">
+                <span data-i18n="html.s128">স্টক শেষ</span>
+              </option>
+            </select>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th><span data-i18n="html.s63">পণ্যের নাম</span></th>
+                    <th><span data-i18n="html.s32">ক্যাটাগরি</span></th>
+                    <th><span data-i18n="html.s39">টাইপ</span></th>
+                    <th><span data-i18n="html.s75">বর্তমান স্টক</span></th>
+                    <th><span data-i18n="html.s107">লো লিমিট</span></th>
+                    <th><span data-i18n="html.s129">স্ট্যাটাস</span></th>
+                    <th><span data-i18n="html.s25">কার্যক্রম</span></th>
+                  </tr>
+                </thead>
+                <tbody id="stock-table-body">
+                  <tr>
+                    <td colspan="7" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DUE PAGE -->
+      <div id="page-due" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s147">👥 বাকির খাতা</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s28">কাস্টমার ও মহাজন বাকি</span>
+            </div>
+          </div>
+          <button
+            class="btn btn-primary btn-sm"
+            id="btn-add-due-person"
+            onclick="openAddCustomerModal()"
+          >
+            <span data-i18n="html.s137">＋ নতুন কাস্টমার</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchDueTab('customer')">
+              <span data-i18n="html.s29">কাস্টমার বাকি</span>
+            </button>
+            <button class="tab-btn" onclick="switchDueTab('supplier')">
+              <span data-i18n="html.s49">দোকানের বাকি (মহাজন)</span>
+            </button>
+          </div>
+          <div class="search-bar">
+            <input
+              type="text"
+              class="search-input"
+              id="due-search-input"
+              placeholder="🔍 নাম বা মোবাইল খুঁজুন..."
+              data-i18n-placeholder="html.s160"
+              oninput="filterDueList()"
+            />
+            <select
+              class="filter-select"
+              id="due-filter"
+              onchange="filterDueList()"
+            >
+              <option value=""><span data-i18n="html.s119">সবাই</span></option>
+              <option value="due">
+                <span data-i18n="html.s77">বাকি আছে</span>
+              </option>
+              <option value="clear">
+                <span data-i18n="html.s67">পরিষ্কার</span>
+              </option>
+            </select>
+          </div>
+          <div id="due-list-container">
+            <div class="table-empty">
+              <span data-i18n="html.s110">লোড হচ্ছে...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASHBOX PAGE (Owner Only) -->
+      <div id="page-cashbox" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s149">💰 ক্যাশবক্স</span>
+            <div class="page-top-sub">Owner Only</div>
+          </div>
+          <div style="display: flex; gap: 6px">
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="openCashManualModal('in')"
+            >
+              <span data-i18n="html.s1">+ ইন</span></button
+            ><button
+              class="btn btn-danger btn-sm"
+              onclick="openCashManualModal('out')"
+            >
+              <span data-i18n="html.s2">- আউট</span>
+            </button>
+          </div>
+        </div>
+        <div class="page-content">
+          <div class="cash-summary">
+            <h3><span data-i18n="html.s74">বর্তমান ব্যালেন্স</span></h3>
+            <div class="balance" id="cash-balance">
+              <span data-i18n="html.s133">৳ ০</span>
+            </div>
+            <div class="cash-in-out">
+              <div class="cash-in">
+                <label><span data-i18n="html.s94">মোট ইন</span></label>
+                <div class="val" id="total-cash-in">
+                  <span data-i18n="html.s133">৳ ০</span>
+                </div>
+              </div>
+              <div class="cash-in">
+                <label><span data-i18n="html.s93">মোট আউট</span></label>
+                <div class="val" id="total-cash-out">
+                  <span data-i18n="html.s133">৳ ০</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 6px;
+              background: #e0e0e0;
+              padding: 4px;
+              border-radius: 10px;
+              margin-bottom: 14px;
+            "
+          >
+            <button
+              id="cash-tab-today"
+              onclick="switchCashTab('today')"
+              style="
+                flex: 1;
+                padding: 8px 4px;
+                border: none;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+                background: white;
+                color: #1a5c2a;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+              "
+            >
+              <span data-i18n="html.s7">আজ</span>
+            </button>
+            <button
+              id="cash-tab-week"
+              onclick="switchCashTab('week')"
+              style="
+                flex: 1;
+                padding: 8px 4px;
+                border: none;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+                background: transparent;
+                color: #6b7280;
+              "
+            >
+              <span data-i18n="html.s21">এই সপ্তাহ</span>
+            </button>
+            <button
+              id="cash-tab-month"
+              onclick="switchCashTab('month')"
+              style="
+                flex: 1;
+                padding: 8px 4px;
+                border: none;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+                background: transparent;
+                color: #6b7280;
+              "
+            >
+              <span data-i18n="html.s19">এই মাস</span>
+            </button>
+            <button
+              id="cash-tab-custom"
+              onclick="switchCashTab('custom')"
+              style="
+                flex: 1;
+                padding: 8px 4px;
+                border: none;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                font-family: inherit;
+                background: transparent;
+                color: #6b7280;
+              "
+            >
+              <span data-i18n="html.s26">কাস্টম</span>
+            </button>
+          </div>
+
+          <!-- Custom date range -->
+          <div
+            id="cash-custom-range"
+            style="display: none; margin-bottom: 12px"
+          >
+            <div style="display: flex; gap: 8px">
+              <div style="flex: 1">
+                <div
+                  style="font-size: 11px; color: #6b7280; margin-bottom: 4px"
+                >
+                  <span data-i18n="html.s111">শুরু তারিখ</span>
+                </div>
+                <input
+                  type="date"
+                  id="cash-from"
+                  class="form-control"
+                  onchange="loadCashbox()"
+                />
+              </div>
+              <div style="flex: 1">
+                <div
+                  style="font-size: 11px; color: #6b7280; margin-bottom: 4px"
+                >
+                  <span data-i18n="html.s112">শেষ তারিখ</span>
+                </div>
+                <input
+                  type="date"
+                  id="cash-to"
+                  class="form-control"
+                  onchange="loadCashbox()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span data-i18n="html.s45">তারিখ</span></th>
+                    <th><span data-i18n="html.s51">ধরন</span></th>
+                    <th><span data-i18n="html.s15">ইন/আউট</span></th>
+                    <th><span data-i18n="html.s65">পরিমাণ</span></th>
+                    <th><span data-i18n="html.s85">ব্যালেন্স</span></th>
+                    <th><span data-i18n="html.s60">নোট</span></th>
+                  </tr>
+                </thead>
+                <tbody id="cash-table-body">
+                  <tr>
+                    <td colspan="6" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPENSE PAGE -->
+      <div id="page-expense" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s152">💸 দোকানের খরচ</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s37">খরচের তালিকা</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openExpenseModal()">
+            <span data-i18n="html.s139">＋ নতুন খরচ</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="search-bar">
+            <select
+              class="filter-select"
+              onchange="filterExpenses()"
+              id="expense-cat-filter"
+            >
+              <option value="">
+                <span data-i18n="html.s116">সব ক্যাটাগরি</span>
+              </option>
+            </select>
+            <input
+              type="date"
+              id="expense-date-filter"
+              class="filter-select"
+              onchange="filterExpenses()"
+            />
+          </div>
+          <div class="card" style="margin-bottom: 12px">
+            <div
+              class="card-body"
+              style="display: flex; gap: 16px; flex-wrap: wrap"
+            >
+              <div>
+                <div style="font-size: 12px; color: var(--text-soft)">
+                  <span data-i18n="html.s10">আজকের মোট খরচ</span>
+                </div>
+                <div
+                  style="font-size: 22px; font-weight: 700; color: var(--red)"
+                  id="today-expense"
+                >
+                  <span data-i18n="html.s133">৳ ০</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-size: 12px; color: var(--text-soft)">
+                  <span data-i18n="html.s20">এই মাসের মোট খরচ</span>
+                </div>
+                <div
+                  style="
+                    font-size: 22px;
+                    font-weight: 700;
+                    color: var(--orange);
+                  "
+                  id="month-expense"
+                >
+                  <span data-i18n="html.s133">৳ ০</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span data-i18n="html.s45">তারিখ</span></th>
+                    <th><span data-i18n="html.s32">ক্যাটাগরি</span></th>
+                    <th><span data-i18n="html.s65">পরিমাণ</span></th>
+                    <th><span data-i18n="html.s60">নোট</span></th>
+                    <th><span data-i18n="html.s13">ইউজার</span></th>
+                    <th><span data-i18n="html.s25">কার্যক্রম</span></th>
+                  </tr>
+                </thead>
+                <tbody id="expense-table-body">
+                  <tr>
+                    <td colspan="6" class="table-empty">
+                      <span data-i18n="html.s110">লোড হচ্ছে...</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTS PAGE -->
+      <div id="page-reports" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('dashboard')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s154">📊 রিপোর্ট</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s82">বিস্তারিত রিপোর্ট</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="printReport()">
+            <span data-i18n="html.s166">🖨️ প্রিন্ট</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <!-- Date Filter -->
+          <div class="card" style="margin-bottom: 14px">
+            <div class="card-body">
+              <div class="tabs" style="margin-bottom: 12px">
+                <button
+                  class="tab-btn active"
+                  onclick="setReportPeriod('today')"
+                >
+                  <span data-i18n="html.s7">আজ</span>
+                </button>
+                <button class="tab-btn" onclick="setReportPeriod('week')">
+                  <span data-i18n="html.s21">এই সপ্তাহ</span>
+                </button>
+                <button class="tab-btn" onclick="setReportPeriod('month')">
+                  <span data-i18n="html.s19">এই মাস</span>
+                </button>
+                <button class="tab-btn" onclick="setReportPeriod('custom')">
+                  <span data-i18n="html.s26">কাস্টম</span>
+                </button>
+              </div>
+              <div id="custom-date-range" class="hidden">
+                <div class="form-row">
+                  <div class="form-group" style="margin: 0">
+                    <label class="form-label"
+                      ><span data-i18n="html.s111">শুরু তারিখ</span></label
+                    >
+                    <input
+                      type="date"
+                      id="report-from"
+                      class="form-control"
+                      onchange="loadReport()"
+                    />
+                  </div>
+                  <div class="form-group" style="margin: 0">
+                    <label class="form-label"
+                      ><span data-i18n="html.s112">শেষ তারিখ</span></label
+                    >
+                    <input
+                      type="date"
+                      id="report-to"
+                      class="form-control"
+                      onchange="loadReport()"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Cards -->
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+              gap: 12px;
+              margin-bottom: 16px;
+            "
+            id="report-cards"
+          >
+            <div class="report-card" onclick="showReportDetail('sales')">
+              <div class="report-icon">💰</div>
+              <div class="report-label">
+                <span data-i18n="html.s99">মোট বিক্রয়</span>
+              </div>
+              <div class="report-value text-green" id="rpt-sales">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+            <div class="report-card" onclick="showReportDetail('purchases')">
+              <div class="report-icon">📦</div>
+              <div class="report-label">
+                <span data-i18n="html.s95">মোট ক্রয়</span>
+              </div>
+              <div class="report-value text-blue" id="rpt-purchase">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+            <div
+              class="report-card"
+              onclick="showReportDetail('expenses')"
+              style="cursor: pointer"
+            >
+              <div class="report-icon">💸</div>
+              <div class="report-label">
+                <span data-i18n="html.s96">মোট খরচ</span>
+              </div>
+              <div class="report-value text-red" id="rpt-expense">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+            <div
+              class="report-card owner-only hidden"
+              onclick="showReportDetail('profit')"
+              style="cursor: pointer"
+            >
+              <div class="report-icon">📈</div>
+              <div class="report-label">
+                <span data-i18n="html.s104">লাভ / ক্ষতি</span>
+              </div>
+              <div class="report-value" id="rpt-profit">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+            <div class="report-card" onclick="showReportDetail('due')">
+              <div class="report-icon">👥</div>
+              <div class="report-label">
+                <span data-i18n="html.s29">কাস্টমার বাকি</span>
+              </div>
+              <div class="report-value text-orange" id="rpt-customer-due">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+            <div
+              class="report-card owner-only hidden"
+              onclick="showReportDetail('cash')"
+            >
+              <div class="report-icon">💵</div>
+              <div class="report-label">
+                <span data-i18n="html.s33">ক্যাশ ব্যালেন্স</span>
+              </div>
+              <div class="report-value text-green" id="rpt-cash">
+                <span data-i18n="html.s133">৳ ০</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detail Table -->
+          <div class="card" id="report-detail-section">
+            <div class="card-header">
+              <h3 id="report-detail-title">
+                <span data-i18n="html.s79">বিক্রয় বিস্তারিত</span>
+              </h3>
+              <button class="btn btn-sm btn-secondary" onclick="printReport()">
+                <span data-i18n="html.s166">🖨️ প্রিন্ট</span>
+              </button>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead id="report-detail-head">
+                  <tr></tr>
+                </thead>
+                <tbody id="report-detail-body">
+                  <tr>
+                    <td colspan="5" class="table-empty">
+                      <span data-i18n="html.s18">উপরের কার্ডে ক্লিক করুন</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE -->
+      <div id="page-settings" class="page">
+        <div class="page-top-bar">
+          <button
+            type="button"
+            class="back-btn"
+            onclick="navigate('dashboard')"
+            aria-label="ফিরে যান"
+          >
+            ⬅
+          </button>
+          <div class="page-top-title">
+            <span data-i18n="html.s135">⚙️ সেটিংস</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s125">সিস্টেম সেটিংস</span>
+            </div>
+          </div>
+        </div>
+        <div class="page-content">
+          <!-- ভাষা (Language) -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              🌐 <span data-i18n="ui.language">ভাষা</span>
+            </div>
+            <div class="settings-item" style="cursor: default">
+              <div class="settings-item-info" style="width: 100%">
+                <select
+                  id="lang-switcher-app"
+                  class="form-control"
+                  onchange="I18N.setLanguage(this.value)"
+                >
+                  <option value="bn">
+                    <span data-i18n="html.s142">🇧🇩 বাংলা</span>
+                  </option>
+                  <option value="en">🇬🇧 English</option>
+                  <option value="ar">🇸🇦 العربية</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- দোকানের তথ্য -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <span data-i18n="html.s143">🏪 দোকানের তথ্য</span>
+            </div>
+            <div
+              class="settings-item"
+              onclick="openShopSettingsModal()"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4><span data-i18n="html.s48">দোকানের তথ্য পরিবর্তন</span></h4>
+                <p>
+                  <span data-i18n="html.s59">নাম, ঠিকানা, ফোন নাম্বার</span>
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+
+          <!-- ক্যাটাগরি কাস্টমাইজেশন -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              🏷️ <span data-i18n="ui.category_settings">ক্যাটাগরি</span>
+            </div>
+            <div
+              class="settings-item"
+              onclick="editCategories('product')"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="ui.edit_product_cats"
+                    >পণ্যের ক্যাটাগরি এডিট করুন</span
+                  >
+                </h4>
+                <p>
+                  <span data-i18n="ui.comma_separated"
+                    >কমা (,) দিয়ে আলাদা করে লিখুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+            <div
+              class="settings-item"
+              onclick="editCategories('expense')"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="ui.edit_expense_cats"
+                    >খরচের ক্যাটাগরি এডিট করুন</span
+                  >
+                </h4>
+                <p>
+                  <span data-i18n="ui.comma_separated"
+                    >কমা (,) দিয়ে আলাদা করে লিখুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+          <div class="settings-section owner-only hidden">
+            <div class="settings-section-title">
+              <span data-i18n="html.s167">🗑️ ট্র্যাশ / রিসাইকেল বিন</span>
+            </div>
+            <div class="settings-item" onclick="openTrashModal()">
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="html.s89">মুছে ফেলা তথ্যের তালিকা</span>
+                </h4>
+                <p>
+                  <span data-i18n="html.s42"
+                    >ডিলিট হওয়া বিল, ক্রয় বা খরচ ফিরিয়ে আনুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+          <div class="settings-section owner-only hidden">
+            <div class="settings-section-title">
+              <span data-i18n="html.s148">👥 ব্যবহারকারী ব্যবস্থাপনা</span>
+            </div>
+            <div class="settings-item" onclick="openUsersModal()">
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="html.s115">সদস্য তালিকা ও অনুমতি</span>
+                </h4>
+                <p>
+                  <span data-i18n="html.s114">সক্রিয়/নিষ্ক্রিয় করুন</span>
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+            <div class="settings-item" onclick="openRegisterModal()">
+              <div class="settings-item-info">
+                <h4><span data-i18n="html.s57">নতুন সদস্য নিবন্ধন</span></h4>
+                <p>
+                  <span data-i18n="html.s53"
+                    >নতুন Owner বা Manager যোগ করুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+
+          <!-- ডাটা ব্যাকআপ ও ক্লিনআপ -->
+          <div class="settings-section owner-only hidden">
+            <div class="settings-section-title">
+              <span data-i18n="html.s153">💾 ডাটা ব্যাকআপ ও ক্লিনআপ</span>
+            </div>
+            <div class="settings-item" onclick="openBackupModal()">
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="html.s72">পুরনো হিসাব সেভ ও মুছে ফেলুন</span>
+                </h4>
+                <p>
+                  <span data-i18n="html.s88"
+                    >মাসিক/বাৎসরিক রিপোর্ট ডাউনলোড করে ডাটাবেস খালি করুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+
+          <!-- নিরাপত্তা -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <span data-i18n="html.s163">🔒 নিরাপত্তা</span>
+            </div>
+
+            <div
+              class="settings-item"
+              onclick="openChangePasswordModal()"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4><span data-i18n="html.s69">পাসওয়ার্ড পরিবর্তন</span></h4>
+                <p>
+                  <span data-i18n="html.s73"
+                    >বর্তমান পাসওয়ার্ড পরিবর্তন করুন</span
+                  >
+                </p>
+              </div>
+              <span>›</span>
+            </div>
+            <div
+              class="settings-item"
+              onclick="doLogout()"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4 style="color: var(--red)">
+                  <span data-i18n="html.s103">লগআউট</span>
+                </h4>
+                <p><span data-i18n="html.s124">সিস্টেম থেকে বের হন</span></p>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+
+          <!-- ফিচার পরিচিতি আবার দেখুন -->
+          <div class="settings-section">
+            <div
+              class="settings-item"
+              onclick="startTour()"
+              role="button"
+              tabindex="0"
+              onkeydown="
+                if (event.key === 'Enter' || event.key === ' ') this.click();
+              "
+            >
+              <div class="settings-item-info">
+                <h4>
+                  <span data-i18n="ui.replay_tour"
+                    >🎯 ফিচার পরিচিতি আবার দেখুন</span
+                  >
+                </h4>
+              </div>
+              <span>›</span>
+            </div>
+          </div>
+
+          <!-- তথ্য -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <span data-i18n="html.s134">ℹ️ তথ্য</span>
+            </div>
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <h4><span data-i18n="html.s43">ডেভেলপার যোগাযোগ</span></h4>
+                <p>📱 WhatsApp: 01752005057</p>
+              </div>
+            </div>
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <h4><span data-i18n="html.s17">ইমেইল</span></h4>
+                <p>mdrahmatakanda@gmail.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOMER DETAIL PAGE -->
+      <div id="page-customer-detail" class="page">
+        <div class="page-top-bar">
+          <button class="back-btn" onclick="navigate('due')">⬅</button>
+          <div class="page-top-title">
+            <span data-i18n="html.s146">👤 কাস্টমার হিসাব</span>
+            <div class="page-top-sub">
+              <span data-i18n="html.s106">লেনদেনের বিবরণ</span>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openPaymentModal()">
+            <span data-i18n="html.s150">💰 টাকা গ্রহণ</span>
+          </button>
+        </div>
+        <div class="page-content">
+          <div class="card" style="margin-bottom: 14px">
+            <div class="card-body">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 14px;
+                  margin-bottom: 14px;
+                "
+              >
+                <div
+                  style="
+                    width: 56px;
+                    height: 56px;
+                    background: var(--green-bg);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 28px;
+                  "
+                >
+                  👤
+                </div>
+                <div>
+                  <h3
+                    id="cd-name"
+                    style="font-size: 18px; font-weight: 700"
+                  ></h3>
+                  <p
+                    id="cd-phone"
+                    style="color: var(--text-soft); font-size: 13px"
+                  ></p>
+                  <p
+                    id="cd-address"
+                    style="color: var(--text-soft); font-size: 12px"
+                  ></p>
+                </div>
+              </div>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(3, 1fr);
+                  gap: 10px;
+                "
+              >
+                <div
+                  style="
+                    text-align: center;
+                    background: var(--bg-page);
+                    padding: 12px;
+                    border-radius: 10px;
+                  "
+                >
+                  <div style="font-size: 11px; color: var(--text-soft)">
+                    <span data-i18n="html.s98">মোট বাকি</span>
+                  </div>
+                  <div
+                    style="font-size: 20px; font-weight: 700; color: var(--red)"
+                    id="cd-total-due"
+                  >
+                    <span data-i18n="html.s133">৳ ০</span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    text-align: center;
+                    background: var(--bg-page);
+                    padding: 12px;
+                    border-radius: 10px;
+                  "
+                >
+                  <div style="font-size: 11px; color: var(--text-soft)">
+                    <span data-i18n="html.s99">মোট বিক্রয়</span>
+                  </div>
+                  <div
+                    style="
+                      font-size: 20px;
+                      font-weight: 700;
+                      color: var(--green-main);
+                    "
+                    id="cd-total-sales"
+                  >
+                    <span data-i18n="html.s133">৳ ০</span>
+                  </div>
+                </div>
+                <div
+                  style="
+                    text-align: center;
+                    background: var(--bg-page);
+                    padding: 12px;
+                    border-radius: 10px;
+                  "
+                >
+                  <div style="font-size: 11px; color: var(--text-soft)">
+                    <span data-i18n="html.s97">মোট পেমেন্ট</span>
+                  </div>
+                  <div
+                    style="
+                      font-size: 20px;
+                      font-weight: 700;
+                      color: var(--blue);
+                    "
+                    id="cd-total-paid"
+                  >
+                    <span data-i18n="html.s133">৳ ০</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><span data-i18n="html.s105">লেনদেনের ইতিহাস</span></h3>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span data-i18n="html.s45">তারিখ</span></th>
+                    <th><span data-i18n="html.s51">ধরন</span></th>
+                    <th><span data-i18n="html.s65">পরিমাণ</span></th>
+                    <th><span data-i18n="html.s85">ব্যালেন্স</span></th>
+                    <th><span data-i18n="html.s60">নোট</span></th>
+                  </tr>
+                </thead>
+                <tbody id="customer-txn-body">
+                  <tr>
+                    <td colspan="5" class="table-empty">
+                      <span data-i18n="html.s31">কোনো লেনদেন নেই</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE PANEL ── -->
+      <div id="slide-panel-backdrop" onclick="closeSlidePanel()"></div>
+      <div id="slide-panel">
+        <div id="slide-panel-header">
+          <button id="slide-panel-close" onclick="closeSlidePanel()">⬅</button>
+          <div id="slide-panel-title">
+            <span data-i18n="html.s55">নতুন বিক্রয়</span>
+          </div>
+        </div>
+        <div id="slide-panel-body"></div>
+        <div id="slide-panel-footer"></div>
+      </div>
+    </div>
+    <!-- end #app -->
+
+    <!-- ══════════════════════════════════════════════════════════════
+     স্ক্রিপ্ট লোড অর্ডার — এই অর্ডারটি গুরুত্বপূর্ণ, বদলাবেন না।
+     ১) কনফিগ ও ডাটাবেজ লেয়ার সবার আগে লোড হতে হবে
+     ২) তারপর গ্লোবাল স্টেট ও ইউটিলিটি
+     ৩) তারপর অথ, নেভিগেশন, ইউআই প্যানেল
+     ৪) তারপর প্রতিটি মডিউল (এদের একে অপরের ওপর নির্ভরতা নেই)
+     ৫) সবশেষে app.js — যেটি অ্যাপ বুট করে
+     ══════════════════════════════════════════════════════════════ -->
+
+    <!-- ১. কনফিগ ও ডাটাবেজ লেয়ার -->
+    <script src="js/config.js"></script>
+
+    <!-- Supabase JS Client (নতুন যোগ করা হলো) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- ভাষা ইঞ্জিন -->
+    <script src="js/i18n/i18n.js"></script>
+    <script src="js/i18n/bn.js"></script>
+    <script src="js/i18n/en.js"></script>
+
+    <script src="js/db/db-adapter.js"></script>
+
+    <!-- ২. গ্লোবাল স্টেট ও ইউটিলিটি -->
+    <script src="js/state.js"></script>
+    <script src="js/utils.js"></script>
+
+    <!-- ৩. অথ, নেভিগেশন, ইউআই প্যানেল -->
+    <script src="js/auth.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/ui-panels.js"></script>
+
+    <!-- ৪. ফিচার মডিউলসমূহ -->
+    <script src="js/modules/dashboard.js"></script>
+    <script src="js/modules/products.js"></script>
+    <script src="js/modules/sales.js"></script>
+    <script src="js/modules/purchases.js"></script>
+    <script src="js/modules/stock.js"></script>
+    <script src="js/modules/dues.js"></script>
+    <script src="js/modules/cashbox.js"></script>
+    <script src="js/modules/expenses.js"></script>
+    <script src="js/modules/reports.js"></script>
+    <script src="js/modules/settings.js"></script>
+    <script src="js/modules/trash.js"></script>
+    <script src="js/modules/backup.js"></script>
+
+    <script src="js/onboarding.js"></script>
+
+    <!-- ৫. অ্যাপ বুট -->
+    <script src="js/app.js"></script>
+    <!-- ── SERVICE WORKER & OFFLINE INDICATOR ── -->
+    <div
+      id="offline-bar"
+      style="
+        display: none;
+        background: #ff9800;
+        color: white;
+        text-align: center;
+        padding: 8px;
+        font-size: 12px;
+        font-weight: bold;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 999999;
+      "
+    >
+      ⚠️ আপনি এখন অফলাইনে আছেন। ইন্টারনেট ছাড়া শুধু ডাটা দেখা যাবে এবং সেভ হবে
+      আপনার ব্রাউজারে।
+    </div>
+
+    <script>
+      // Service Worker Registration for PWA
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((reg) =>
+              console.log("Service Worker Registered Successfully!", reg.scope),
+            )
+            .catch((err) =>
+              console.error("Service Worker Registration Failed:", err),
+            );
+        });
+      }
+
+      // Offline/Online Status Detect
+      window.addEventListener("offline", () => {
+        document.getElementById("offline-bar").style.display = "block";
+      });
+
+      window.addEventListener("online", () => {
+        document.getElementById("offline-bar").style.display = "none";
+        showToast("ইন্টারনেট সংযোগ ফিরে এসেছে!", "success"); // যদি আপনার utils.js এ showToast থাকে
+      });
+
+      // পেজ লোডের সময় চেক করা
+      if (!navigator.onLine) {
+        document.getElementById("offline-bar").style.display = "block";
+      }
+    </script>
+  </body>
+</html>
